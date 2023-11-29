@@ -91,12 +91,12 @@ export const Login: React.FC = () => {
                                 <Text style={{ fontSize: 12 }}>
                                     Don’t have an account?
                                     <a
-                                        href="#"
+                                        href=""
                                         style={{
                                             fontWeight: "bold",
                                             marginLeft: 12,
                                         }}
-                                        onClick={() => push("signup")}
+                                        onClick={() => push("/signup")}
                                     >
                                         Sign up
                                     </a>
