@@ -1,20 +1,33 @@
-const express = require('express');
-const sqlite3 = require('sqlite3');
-const bodyParser = require('body-parser');
+const express = require("express");
+const sqlite3 = require("sqlite3").verbose();
+const bodyParser = require("body-parser");
 
 const app = express();
 const port = 3030;
 
 app.use(bodyParser.json());
 
-const db = new sqlite3.Database(':memory:');
+const db = new sqlite3.Database(":memory:");
 
 db.serialize(() => {
-  db.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, mobile NUMERIC, email2 TEXT, mobile2 NUMERIC)');
+  db.run(`
+    CREATE TABLE crm (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      AcName TEXT,
+      AcSalutation TEXT,
+      AcType TEXT,
+      AcCode TEXT,
+      AcContact TEXT,
+      AcMobile TEXT,
+      AcMobile2 TEXT,
+      AcEmail TEXT,
+      AcEmail2 TEXT
+    )
+  `);
 });
 
-app.get('/api/users/all', (req, res) => {
-  db.all('SELECT * FROM users', [], (err, rows) => {
+app.get("/crm", (req, res) => {
+  db.all("SELECT * FROM crm", [], (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -23,30 +36,46 @@ app.get('/api/users/all', (req, res) => {
   });
 });
 
-app.post('/api/users', (req, res) => {
-  const { name, email, mobile , email2, mobile2 } = req.body;
-  db.run('INSERT INTO users (name, email, mobile, email2 , mobile2 ) VALUES (?, ?, ?, ?, ?)', [name, email, mobile, email2, mobile2], function(err) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ id: this.lastID });
-  });
+app.post("/crm", (req, res) => {
+  const {
+    AcName,
+    AcSalutation,
+    AcType,
+    AcCode,
+    AcContact,
+    AcMobile,
+    AcMobile2,
+    AcEmail,
+    AcEmail2,
+  } = req.body;
+
+  db.run(
+    "INSERT INTO crm (AcName, AcSalutation, AcType, AcCode, AcContact, AcMobile, AcMobile2, AcEmail, AcEmail2) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    [
+      AcName,
+      AcSalutation,
+      AcType,
+      AcCode,
+      AcContact,
+      AcMobile,
+      AcMobile2,
+      AcEmail,
+      AcEmail2,
+    ],
+    function (err) {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json({ id: this.lastID });
+    },
+  );
 });
 
-app.delete('/api/users/:id', (req, res) => {
-    const id = req.params.id;
-    db.run('DELETE FROM users WHERE id = ?', id, function(err) {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        if (this.changes === 0) {
-            res.status(404).json({ error: "User not found" });
-            return;
-        }
-        res.json({ message: 'User deleted', deletedId: id });
-    });
+app.post("/any", (req, res) => {
+  console.log("Received POST request with data:");
+  console.log(req.body);
+  res.send("Data received successfully!");
 });
 
 app.listen(port, () => {
