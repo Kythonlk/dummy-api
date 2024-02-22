@@ -80,9 +80,8 @@ app.post("/crm", (req, res) => {
 });
 
 app.post("/any", (req, res) => {
-  console.log("Received POST request with data:");
-  console.log(req.body);
-  res.send("Data received successfully!");
+  const postData = req.body;
+  res.json(postData);
 });
 
 app.listen(port, () => {
