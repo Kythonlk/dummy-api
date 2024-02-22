@@ -12,7 +12,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use(bodyParser.json());
+app.use(bodyParser.json());
 
 const db = new sqlite3.Database(":memory:");
 
